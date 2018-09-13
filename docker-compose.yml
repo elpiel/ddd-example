@@ -1,0 +1,48 @@
+version: '3'
+services:
+    apache:
+        build: .docker/apache
+        container_name: application
+        ports:
+          - 80:80
+        volumes:
+          - .docker/config/vhosts:/etc/apache2/sites-enabled
+          - .:/app
+        depends_on:
+          - php
+
+    mysql:
+        image: mysql
+        container_name: mysql
+        volumes:
+            - .docker/data/db:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: application
+            MYSQL_USER: docker
+            MYSQL_PASSWORD: docker
+
+    php:
+        build: .docker/php
+        container_name: php
+        volumes:
+          - .:/app
+        environment:
+          - mailcatcher_host=mailcatcher
+        depends_on:
+          - mailcatcher
+          - mysql
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin
+        ports:
+            - 8080:80
+        links:
+            - mysql
+
+    mailcatcher:
+        image: schickling/mailcatcher
+        container_name: mailcatcher
+        ports:
+          - 1080:1080
