@@ -4,11 +4,17 @@ USER_GROUP = $(shell id -g)
 .PHONY: composer-install
 composer-install:
 	docker run \
+	-it \
 	--rm \
-	--interactive \
 	--tty \
-	--env COMPOSER_HOME='/home/www-data' \
-	--volume ${PWD}:/app \
-#	--volume ${HOME}/.cache/composer:/tmp \
-	--user $(USER_ID):$(USER_GROUP) \
+	-v ${PWD}:/app \
+	-u $(USER_ID):$(USER_GROUP) \
 	composer install
+
+.PHONY: unit-tests
+unit-tests:
+	docker-compose exec \
+	-u $(USER_ID):$(USER_GROUP) \
+	-w /app \
+	php \
+	./bin/phpunit

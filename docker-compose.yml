@@ -15,7 +15,7 @@ services:
         image: mysql
         container_name: mysql
         volumes:
-            - .docker/data/db:/var/lib/mysql
+            - mysql-volume:/var/lib/mysql
         environment:
             MYSQL_ROOT_PASSWORD: root
             MYSQL_DATABASE: application
@@ -46,3 +46,5 @@ services:
         container_name: mailcatcher
         ports:
           - 1080:1080
+volumes:
+    mysql-volume:
